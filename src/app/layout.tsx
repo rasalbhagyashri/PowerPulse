@@ -4,8 +4,8 @@ import { cn } from '@/lib/utils';
 import { Toaster } from '@/components/ui/toaster';
 
 export const metadata: Metadata = {
-  title: 'WattWise',
-  description: 'AI-Based Power Monitoring & Filtering System',
+  title: 'PowerPulse',
+  description: 'Power Monitoring and Filtering System',
 };
 
 export default function RootLayout({

@@ -13,10 +13,10 @@ export default function Home() {
         </div>
         <div className="space-y-2">
           <h1 className="font-headline text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl">
-            AI-Based Power Monitoring & Filtering System
+            Power Monitoring and Filtering System
           </h1>
           <p className="text-muted-foreground md:text-xl">
-            Group 8 Major Project
+            Monitor, analyze, and ensure the quality of your power.
           </p>
         </div>
         <Button asChild size="lg" className="font-semibold">

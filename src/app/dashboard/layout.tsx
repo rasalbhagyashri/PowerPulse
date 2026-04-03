@@ -77,7 +77,7 @@ export default function DashboardLayout({
         <SidebarHeader>
           <div className="flex h-10 items-center gap-2 px-2">
             <Icons.logo className="h-7 w-7 text-primary" />
-            <span className="text-lg font-semibold">WattWise</span>
+            <span className="text-lg font-semibold">PowerPulse</span>
           </div>
         </SidebarHeader>
         <SidebarContent>
