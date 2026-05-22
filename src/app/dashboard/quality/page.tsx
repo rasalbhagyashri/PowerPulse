@@ -109,12 +109,12 @@ export default function QualityPage() {
       <Card>
         <CardHeader>
           <CardTitle>Harmonic Profile</CardTitle>
-          <CardDescription>Detailed analysis of current and voltage waveforms.</CardDescription>
+          <CardDescription>Voltage vs Current Total Harmonic Distortion analysis</CardDescription>
         </CardHeader>
         <CardContent className="h-48 flex items-center justify-center border-t pt-6">
            <div className="flex flex-col items-center gap-2 text-center text-muted-foreground">
              <Waves className="h-8 w-8 opacity-20" />
-             <p className="text-sm">Waveform analysis data is streaming...</p>
+             <p className="text-sm">Waveform analysis data is streaming from database...</p>
            </div>
         </CardContent>
       </Card>

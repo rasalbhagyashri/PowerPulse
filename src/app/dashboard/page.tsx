@@ -10,18 +10,16 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { 
   Zap, 
   Waves, 
   Activity, 
   ShieldAlert, 
-  ShieldCheck, 
-  Gauge, 
   Clock,
   TrendingUp,
   AlertTriangle,
-  Info
+  Info,
+  Gauge
 } from 'lucide-react';
 import {
   LineChart,
@@ -94,7 +92,7 @@ export default function Dashboard() {
       <div className="flex h-screen items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-4">
           <Activity className="h-12 w-12 animate-spin text-primary" />
-          <p className="text-lg font-medium animate-pulse">Establishing link to ESP-CLOUD-4F474...</p>
+          <p className="text-lg font-medium animate-pulse">Connecting to PowerPulse Cloud...</p>
         </div>
       </div>
     );
@@ -113,7 +111,7 @@ export default function Dashboard() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">System Console</h1>
-          <p className="text-muted-foreground">Real-time Telemetry: {data?.status || 'Active'}</p>
+          <p className="text-muted-foreground">Real-time Telemetry: Active Monitoring</p>
         </div>
         <div className="flex items-center gap-2 text-sm text-muted-foreground bg-muted/50 px-3 py-1.5 rounded-full">
           <Clock className="h-4 w-4" />
@@ -177,8 +175,8 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <Card className="lg:col-span-2">
           <CardHeader>
-            <CardTitle>Vrms / Irms History</CardTitle>
-            <CardDescription>Live telemetry stream</CardDescription>
+            <CardTitle>Telemetry Stream</CardTitle>
+            <CardDescription>Vrms and Irms real-time trends</CardDescription>
           </CardHeader>
           <CardContent className="h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
@@ -201,7 +199,7 @@ export default function Dashboard() {
         <Card className="flex flex-col">
           <CardHeader>
             <CardTitle>Health Index</CardTitle>
-            <CardDescription>Reliability calculation</CardDescription>
+            <CardDescription>Equipment reliability calculation</CardDescription>
           </CardHeader>
           <CardContent className="flex flex-1 flex-col items-center justify-center gap-6">
             <div className="relative flex items-center justify-center">

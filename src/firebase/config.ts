@@ -5,13 +5,14 @@ import { getDatabase } from 'firebase/database';
 import { getAuth } from 'firebase/auth';
 
 const firebaseConfig = {
-  apiKey: "AIzaSy...", // Using existing placeholder or generic key
+  apiKey: "AIzaSyCXTz_U-fZSzdaQtiUpZY18a_tpmhmS9S0",
   authDomain: "esp-cloud-4f474.firebaseapp.com",
   databaseURL: "https://esp-cloud-4f474-default-rtdb.firebaseio.com",
   projectId: "esp-cloud-4f474",
-  storageBucket: "esp-cloud-4f474.appspot.com",
-  messagingSenderId: "390945656991",
-  appId: "1:390945656991:web:..."
+  storageBucket: "esp-cloud-4f474.firebasestorage.app",
+  messagingSenderId: "912836456618",
+  appId: "1:912836456618:web:9fc332be7b8a5569a1a0d3",
+  measurementId: "G-2WT4NBB8WP"
 };
 
 // Initialize Firebase
