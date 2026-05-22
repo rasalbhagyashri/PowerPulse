@@ -5,14 +5,14 @@ import { getDatabase } from 'firebase/database';
 import { getAuth } from 'firebase/auth';
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCXTz_U-fZSzdaQtiUpZY18a_tpmhmS9S0",
-  authDomain: "esp-cloud-4f474.firebaseapp.com",
-  databaseURL: "https://esp-cloud-4f474-default-rtdb.firebaseio.com",
-  projectId: "esp-cloud-4f474",
-  storageBucket: "esp-cloud-4f474.firebasestorage.app",
-  messagingSenderId: "912836456618",
-  appId: "1:912836456618:web:9fc332be7b8a5569a1a0d3",
-  measurementId: "G-2WT4NBB8WP"
+  apiKey: "AIzaSyCARD_QK_S0yywo54qm-CKrG-Jl3TRuQFI",
+  authDomain: "esp8266-4753b.firebaseapp.com",
+  databaseURL: "https://esp8266-4753b-default-rtdb.firebaseio.com",
+  projectId: "esp8266-4753b",
+  storageBucket: "esp8266-4753b.firebasestorage.app",
+  messagingSenderId: "504595904280",
+  appId: "1:504595904280:web:ef313fad74fe765ef6906d",
+  measurementId: "G-E1S7Q4NS4M"
 };
 
 // Initialize Firebase

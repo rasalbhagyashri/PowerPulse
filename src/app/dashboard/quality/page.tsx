@@ -108,7 +108,7 @@ export default function QualityPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Harmonic Profile</CardTitle>
+          <CardTitle className="text-lg">Harmonic Profile</CardTitle>
           <CardDescription>Voltage vs Current Total Harmonic Distortion analysis</CardDescription>
         </CardHeader>
         <CardContent className="h-48 flex items-center justify-center border-t pt-6">
