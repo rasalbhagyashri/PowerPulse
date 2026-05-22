@@ -11,7 +11,6 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
 import { 
   Zap, 
   Waves, 
@@ -21,7 +20,8 @@ import {
   Gauge, 
   Clock,
   TrendingUp,
-  AlertTriangle
+  AlertTriangle,
+  Info
 } from 'lucide-react';
 import {
   LineChart,
@@ -38,8 +38,8 @@ interface PowerData {
   Vrms: number;
   Irms: number;
   Freq: number;
-  Swell: boolean;
-  Sag: boolean;
+  Swell: number;
+  Sag: number;
   ActivePower: number;
   ReactivePower: number;
   CurrentTHD: number;
@@ -47,6 +47,7 @@ interface PowerData {
   TotalTHD: number;
   PowerFactor: number;
   HealthIndex: number;
+  status: string;
 }
 
 interface HistoryItem {
@@ -71,15 +72,14 @@ export default function Dashboard() {
         setData(val);
         setLastUpdate(new Date());
         
-        // Update history for charts
         setHistory(prev => {
           const newItem = {
             time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
-            voltage: val.Vrms,
-            current: val.Irms,
-            thd: val.TotalTHD
+            voltage: val.Vrms || 0,
+            current: val.Irms || 0,
+            thd: val.TotalTHD || 0
           };
-          const newHistory = [...prev, newItem].slice(-20); // Keep last 20 points
+          const newHistory = [...prev, newItem].slice(-20);
           return newHistory;
         });
       }
@@ -94,26 +94,26 @@ export default function Dashboard() {
       <div className="flex h-screen items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-4">
           <Activity className="h-12 w-12 animate-spin text-primary" />
-          <p className="text-lg font-medium animate-pulse">Establishing secure link to ESP12-F...</p>
+          <p className="text-lg font-medium animate-pulse">Establishing link to ESP-CLOUD-4F474...</p>
         </div>
       </div>
     );
   }
 
   const getHealthStatus = (index: number) => {
-    if (index > 90) return { label: 'Excellent', color: 'text-success' };
-    if (index >= 70) return { label: 'Good', color: 'text-warning' };
-    return { label: 'Warning', color: 'text-destructive' };
+    if (index > 80) return { label: 'Excellent', color: 'text-success' };
+    if (index >= 60) return { label: 'Good', color: 'text-warning' };
+    return { label: 'Critical', color: 'text-destructive' };
   };
 
-  const healthStatus = data ? getHealthStatus(data.HealthIndex) : null;
+  const healthStatus = data ? getHealthStatus(data.HealthIndex || 0) : null;
 
   return (
     <div className="flex flex-col gap-6 p-4 md:p-8 bg-background min-h-screen">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">System Console</h1>
-          <p className="text-muted-foreground">Real-time PowerPulse Telemetry Feed</p>
+          <p className="text-muted-foreground">Real-time Telemetry: {data?.status || 'Active'}</p>
         </div>
         <div className="flex items-center gap-2 text-sm text-muted-foreground bg-muted/50 px-3 py-1.5 rounded-full">
           <Clock className="h-4 w-4" />
@@ -121,33 +121,44 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Critical Status Indicators */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <Card className={cn("transition-colors", data?.Sag ? "bg-destructive/10 border-destructive/50" : "bg-card")}>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Card className={cn("transition-colors", (data?.Sag || 0) > 0 ? "bg-destructive/10 border-destructive/50" : "bg-card")}>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">Voltage Sag</CardTitle>
-            <ShieldAlert className={cn("h-5 w-5", data?.Sag ? "text-destructive" : "text-muted-foreground")} />
+            <ShieldAlert className={cn("h-5 w-5", (data?.Sag || 0) > 0 ? "text-destructive" : "text-muted-foreground")} />
           </CardHeader>
           <CardContent>
-            <div className={cn("text-xl font-bold", data?.Sag ? "text-destructive" : "text-success")}>
-              {data?.Sag ? 'UNDER-VOLTAGE DETECTED' : 'Nominal Level'}
+            <div className={cn("text-xl font-bold", (data?.Sag || 0) > 0 ? "text-destructive" : "text-success")}>
+              {data?.Sag ? `${data.Sag} EVENT${data.Sag > 1 ? 'S' : ''} DETECTED` : 'NORMAL'}
             </div>
           </CardContent>
         </Card>
-        <Card className={cn("transition-colors", data?.Swell ? "bg-orange-500/10 border-orange-500/50" : "bg-card")}>
+        
+        <Card className={cn("transition-colors", (data?.Swell || 0) > 0 ? "bg-orange-500/10 border-orange-500/50" : "bg-card")}>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">Voltage Swell</CardTitle>
-            <AlertTriangle className={cn("h-5 w-5", data?.Swell ? "text-orange-500" : "text-muted-foreground")} />
+            <AlertTriangle className={cn("h-5 w-5", (data?.Swell || 0) > 0 ? "text-orange-500" : "text-muted-foreground")} />
           </CardHeader>
           <CardContent>
-            <div className={cn("text-xl font-bold", data?.Swell ? "text-orange-500" : "text-success")}>
-              {data?.Swell ? 'OVER-VOLTAGE DETECTED' : 'Nominal Level'}
+            <div className={cn("text-xl font-bold", (data?.Swell || 0) > 0 ? "text-orange-500" : "text-success")}>
+              {data?.Swell ? `${data.Swell} EVENT${data.Swell > 1 ? 'S' : ''} DETECTED` : 'NORMAL'}
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium">System Status</CardTitle>
+            <Info className="h-5 w-5 text-primary" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-xl font-bold uppercase text-primary">
+              {data?.status || 'NOMINAL'}
             </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Main Parameters Grid */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
         <StatCard title="Voltage" value={data?.Vrms} unit="V" icon={Zap} />
         <StatCard title="Current" value={data?.Irms} unit="A" icon={Waves} />
@@ -156,7 +167,6 @@ export default function Dashboard() {
         <StatCard title="Reactive" value={data?.ReactivePower} unit="VAR" icon={Gauge} />
       </div>
 
-      {/* THD and PF Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard title="Voltage THD" value={data?.VoltageTHD} unit="%" icon={Activity} />
         <StatCard title="Current THD" value={data?.CurrentTHD} unit="%" icon={Activity} />
@@ -165,11 +175,10 @@ export default function Dashboard() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Trend Charts */}
         <Card className="lg:col-span-2">
           <CardHeader>
             <CardTitle>Vrms / Irms History</CardTitle>
-            <CardDescription>Live waveform monitoring</CardDescription>
+            <CardDescription>Live telemetry stream</CardDescription>
           </CardHeader>
           <CardContent className="h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
@@ -189,46 +198,28 @@ export default function Dashboard() {
           </CardContent>
         </Card>
 
-        {/* Health Index Card */}
         <Card className="flex flex-col">
           <CardHeader>
-            <CardTitle>Device Health Index</CardTitle>
-            <CardDescription>Estimated lifecycle efficiency</CardDescription>
+            <CardTitle>Health Index</CardTitle>
+            <CardDescription>Reliability calculation</CardDescription>
           </CardHeader>
           <CardContent className="flex flex-1 flex-col items-center justify-center gap-6">
             <div className="relative flex items-center justify-center">
               <svg className="h-32 w-32 -rotate-90">
+                <circle cx="64" cy="64" r="58" fill="transparent" stroke="hsl(var(--muted))" strokeWidth="8" />
                 <circle
-                  cx="64"
-                  cy="64"
-                  r="58"
-                  fill="transparent"
-                  stroke="hsl(var(--muted))"
-                  strokeWidth="8"
-                />
-                <circle
-                  cx="64"
-                  cy="64"
-                  r="58"
-                  fill="transparent"
-                  stroke="currentColor"
-                  strokeWidth="8"
+                  cx="64" cy="64" r="58" fill="transparent" stroke="currentColor" strokeWidth="8"
                   strokeDasharray={364.4}
                   strokeDashoffset={364.4 - (364.4 * (data?.HealthIndex || 0)) / 100}
                   className={cn("transition-all duration-1000", healthStatus?.color)}
                 />
               </svg>
               <div className="absolute flex flex-col items-center">
-                <span className="text-3xl font-bold">{data?.HealthIndex}%</span>
+                <span className="text-3xl font-bold">{data?.HealthIndex || 0}%</span>
                 <span className={cn("text-xs font-semibold", healthStatus?.color)}>
                   {healthStatus?.label}
                 </span>
               </div>
-            </div>
-            <div className="w-full space-y-2 text-center">
-              <p className="text-sm text-muted-foreground">
-                Overall equipment reliability based on THD and transient history.
-              </p>
             </div>
           </CardContent>
         </Card>

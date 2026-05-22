@@ -5,11 +5,11 @@ import { getDatabase } from 'firebase/database';
 import { getAuth } from 'firebase/auth';
 
 const firebaseConfig = {
-  apiKey: "AIzaSy...", // Placeholder, will be replaced by actual config if available
-  authDomain: "espcloud-1f722.firebaseapp.com",
-  databaseURL: "https://espcloud-1f722-default-rtdb.firebaseio.com/",
-  projectId: "espcloud-1f722",
-  storageBucket: "espcloud-1f722.appspot.com",
+  apiKey: "AIzaSy...", // Using existing placeholder or generic key
+  authDomain: "esp-cloud-4f474.firebaseapp.com",
+  databaseURL: "https://esp-cloud-4f474-default-rtdb.firebaseio.com",
+  projectId: "esp-cloud-4f474",
+  storageBucket: "esp-cloud-4f474.appspot.com",
   messagingSenderId: "390945656991",
   appId: "1:390945656991:web:..."
 };

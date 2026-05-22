@@ -1,5 +1,8 @@
 'use client';
 
+import React, { useEffect, useState } from 'react';
+import { db } from '@/firebase/config';
+import { ref, onValue } from 'firebase/database';
 import {
   Card,
   CardContent,
@@ -7,27 +10,20 @@ import {
   CardTitle,
   CardDescription,
 } from '@/components/ui/card';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
-import { disturbances, powerQuality, type Disturbance } from '@/lib/data';
 import { cn } from '@/lib/utils';
-import { formatDistanceToNow } from 'date-fns';
+import { Waves, Activity, ShieldAlert, AlertTriangle, Info } from 'lucide-react';
 
-const severityMap: Record<Disturbance['severity'], string> = {
-  Low: 'bg-green-500/20 text-green-400 border-green-500/30 hover:bg-green-500/30',
-  Medium: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30 hover:bg-yellow-500/30',
-  High: 'bg-red-500/20 text-red-400 border-red-500/30 hover:bg-red-500/30',
-};
+interface QualityData {
+  VoltageTHD: number;
+  CurrentTHD: number;
+  TotalTHD: number;
+  Sag: number;
+  Swell: number;
+  status: string;
+}
 
-function THDCard({ title, value }: { title: string; value: number }) {
-  const getTHDColor = (val: number) => {
+function MetricCard({ title, value, unit = "%" }: { title: string; value: number; unit?: string }) {
+  const getColor = (val: number) => {
     if (val < 5) return 'text-green-400';
     if (val < 8) return 'text-yellow-400';
     return 'text-red-400';
@@ -38,8 +34,8 @@ function THDCard({ title, value }: { title: string; value: number }) {
         <CardTitle className="text-base">{title}</CardTitle>
       </CardHeader>
       <CardContent>
-        <p className={cn('text-4xl font-bold', getTHDColor(value))}>
-          {value.toFixed(1)}%
+        <p className={cn('text-4xl font-bold', getColor(value))}>
+          {value !== undefined ? value.toFixed(2) : '--'}{unit}
         </p>
       </CardContent>
     </Card>
@@ -47,57 +43,79 @@ function THDCard({ title, value }: { title: string; value: number }) {
 }
 
 export default function QualityPage() {
+  const [data, setData] = useState<QualityData | null>(null);
+
+  useEffect(() => {
+    const powerRef = ref(db, 'powerData');
+    const unsubscribe = onValue(powerRef, (snapshot) => {
+      setData(snapshot.val());
+    });
+    return () => unsubscribe();
+  }, []);
+
   return (
-    <div className="flex flex-col gap-8 py-4">
+    <div className="flex flex-col gap-8 py-4 px-4 md:px-8">
       <div>
         <h1 className="text-3xl font-bold">Power Quality</h1>
         <p className="text-muted-foreground">
-          Monitor and analyze power disturbances and harmonic distortion.
+          Real-time harmonic distortion and transient analysis.
         </p>
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">
-        <THDCard title="Voltage THD" value={powerQuality.voltageTHD} />
-        <THDCard title="Current THD" value={powerQuality.currentTHD} />
-        <THDCard title="Total THD" value={powerQuality.totalTHD} />
+        <MetricCard title="Voltage THD" value={data?.VoltageTHD || 0} />
+        <MetricCard title="Current THD" value={data?.CurrentTHD || 0} />
+        <MetricCard title="Total THD" value={data?.TotalTHD || 0} />
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-3">
+        <Card className={cn("transition-colors", (data?.Sag || 0) > 0 ? "bg-destructive/10 border-destructive/50" : "bg-card")}>
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium">Voltage Sag</CardTitle>
+            <ShieldAlert className={cn("h-5 w-5", (data?.Sag || 0) > 0 ? "text-destructive" : "text-muted-foreground")} />
+          </CardHeader>
+          <CardContent>
+            <div className={cn("text-xl font-bold", (data?.Sag || 0) > 0 ? "text-destructive" : "text-success")}>
+              {data?.Sag ? `${data.Sag} EVENT${data.Sag > 1 ? 'S' : ''} DETECTED` : 'NORMAL'}
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className={cn("transition-colors", (data?.Swell || 0) > 0 ? "bg-orange-500/10 border-orange-500/50" : "bg-card")}>
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium">Voltage Swell</CardTitle>
+            <AlertTriangle className={cn("h-5 w-5", (data?.Swell || 0) > 0 ? "text-orange-500" : "text-muted-foreground")} />
+          </CardHeader>
+          <CardContent>
+            <div className={cn("text-xl font-bold", (data?.Swell || 0) > 0 ? "text-orange-500" : "text-success")}>
+              {data?.Swell ? `${data.Swell} EVENT${data.Swell > 1 ? 'S' : ''} DETECTED` : 'NORMAL'}
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium">System Status</CardTitle>
+            <Info className="h-5 w-5 text-primary" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-xl font-bold uppercase text-primary">
+              {data?.status || 'NOMINAL'}
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>Recent Disturbances</CardTitle>
-          <CardDescription>
-            A log of recent power quality events detected by the system.
-          </CardDescription>
+          <CardTitle>Harmonic Profile</CardTitle>
+          <CardDescription>Detailed analysis of current and voltage waveforms.</CardDescription>
         </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Event Type</TableHead>
-                <TableHead>Severity</TableHead>
-                <TableHead>Timestamp</TableHead>
-                <TableHead>Details</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {disturbances.map((d, i) => (
-                <TableRow key={i}>
-                  <TableCell className="font-medium">{d.type}</TableCell>
-                  <TableCell>
-                    <Badge variant="outline" className={cn(severityMap[d.severity])}>
-                      {d.severity}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    {formatDistanceToNow(new Date(d.timestamp), {
-                      addSuffix: true,
-                    })}
-                  </TableCell>
-                  <TableCell>{d.details}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+        <CardContent className="h-48 flex items-center justify-center border-t pt-6">
+           <div className="flex flex-col items-center gap-2 text-center text-muted-foreground">
+             <Waves className="h-8 w-8 opacity-20" />
+             <p className="text-sm">Waveform analysis data is streaming...</p>
+           </div>
         </CardContent>
       </Card>
     </div>
