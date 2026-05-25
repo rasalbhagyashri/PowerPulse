@@ -36,8 +36,8 @@ interface PowerData {
   Vrms: number;
   Irms: number;
   Freq: number;
-  Swell: number;
   Sag: number;
+  Swell: number;
   ActivePower: number;
   ReactivePower: number;
   THDi: number;
