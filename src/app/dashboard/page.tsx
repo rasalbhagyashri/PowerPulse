@@ -42,7 +42,6 @@ interface PowerData {
   ReactivePower: number;
   THDi: number;
   THDv: number;
-  TotalTHD: number;
   PowerFactor: number;
   HealthIndex: number;
   status: string;
@@ -75,7 +74,7 @@ export default function Dashboard() {
             time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
             voltage: val.Vrms || 0,
             current: val.Irms || 0,
-            thd: val.TotalTHD || 0
+            thd: val.THDv || 0
           };
           const newHistory = [...prev, newItem].slice(-20);
           return newHistory;
@@ -99,7 +98,7 @@ export default function Dashboard() {
   }
 
   const getHealthStatus = (index: number) => {
-    if (index > 80) return { label: 'Excellent', color: 'text-success' };
+    if (index >= 80) return { label: 'Excellent', color: 'text-success' };
     if (index >= 60) return { label: 'Good', color: 'text-warning' };
     return { label: 'Critical', color: 'text-destructive' };
   };
@@ -165,10 +164,9 @@ export default function Dashboard() {
         <StatCard title="Reactive" value={data?.ReactivePower} unit="VAR" icon={Gauge} />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <StatCard title="Voltage THD" value={data?.THDv} unit="%" icon={Activity} />
         <StatCard title="Current THD" value={data?.THDi} unit="%" icon={Activity} />
-        <StatCard title="Total THD" value={data?.TotalTHD} unit="%" icon={Waves} />
         <StatCard title="Power Factor" value={data?.PowerFactor} unit="" icon={Gauge} />
       </div>
 
