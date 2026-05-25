@@ -81,7 +81,7 @@ export default function QualityPage() {
             <ShieldAlert className={cn("h-5 w-5", (data?.Sag || 0) > 0 ? "text-destructive" : "text-muted-foreground")} />
           </CardHeader>
           <CardContent>
-            <div className={cn("text-xl font-bold", (data?.Sag || 0) > 0 ? "text-destructive" : "text-muted-foreground")}>
+            <div className={cn("text-xl font-bold uppercase", (data?.Sag || 0) > 0 ? "text-destructive" : "text-muted-foreground")}>
               {data?.Sag ? `${data.Sag} EVENT${data.Sag > 1 ? 'S' : ''} DETECTED` : '0 EVENTS DETECTED'}
             </div>
           </CardContent>
@@ -93,7 +93,7 @@ export default function QualityPage() {
             <AlertTriangle className={cn("h-5 w-5", (data?.Swell || 0) > 0 ? "text-orange-500" : "text-muted-foreground")} />
           </CardHeader>
           <CardContent>
-            <div className={cn("text-xl font-bold", (data?.Swell || 0) > 0 ? "text-orange-500" : "text-muted-foreground")}>
+            <div className={cn("text-xl font-bold uppercase", (data?.Swell || 0) > 0 ? "text-orange-500" : "text-muted-foreground")}>
               {data?.Swell ? `${data.Swell} EVENT${data.Swell > 1 ? 'S' : ''} DETECTED` : '0 EVENTS DETECTED'}
             </div>
           </CardContent>

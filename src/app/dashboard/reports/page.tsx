@@ -13,8 +13,8 @@ import {
   ChartTooltipContent,
 } from '@/components/ui/chart';
 import { reportData } from '@/lib/data';
-import { Download, TrendingUp, BarChart, AlertTriangle } from 'lucide-react';
-import { Area, AreaChart, Bar, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';
+import { Download, TrendingUp, BarChart as BarChartIcon, AlertTriangle } from 'lucide-react';
+import { Area, AreaChart, Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';
 
 function ReportStatCard({ title, value, unit, icon: Icon }: { title: string, value: string | number, unit: string, icon: React.ElementType }) {
     return (
@@ -57,7 +57,7 @@ export default function ReportsPage() {
       </div>
       
       <div className="grid gap-4 md:grid-cols-3">
-        <ReportStatCard title="Average THD" value={reportData.summary.avgThd} unit="%" icon={BarChart} />
+        <ReportStatCard title="Average THD" value={reportData.summary.avgThd} unit="%" icon={BarChartIcon} />
         <ReportStatCard title="Total Disturbances" value={reportData.summary.totalDisturbances} unit="events" icon={AlertTriangle} />
         <ReportStatCard title="Health Trend" value={reportData.summary.healthTrend} unit="" icon={TrendingUp} />
       </div>
