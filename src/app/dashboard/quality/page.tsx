@@ -18,23 +18,28 @@ interface QualityData {
   THDi: number;
   Sag: number;
   Swell: number;
+  HarmV: number | string;
   status: string;
 }
 
-function MetricCard({ title, value, unit = "%" }: { title: string; value: number; unit?: string }) {
+function MetricCard({ title, value, unit = "%" }: { title: string; value: number | string; unit?: string }) {
   const getColor = (val: number) => {
     if (val < 5) return 'text-green-400';
     if (val < 8) return 'text-yellow-400';
     return 'text-red-400';
   };
+
+  const numericValue = typeof value === 'number' ? value : 0;
+  const displayValue = typeof value === 'number' ? value.toFixed(2) : (value || '--');
+
   return (
     <Card>
       <CardHeader>
         <CardTitle className="text-base">{title}</CardTitle>
       </CardHeader>
       <CardContent>
-        <p className={cn('text-4xl font-bold', getColor(value))}>
-          {value !== undefined ? value.toFixed(2) : '--'}{unit}
+        <p className={cn('text-4xl font-bold', typeof value === 'number' ? getColor(numericValue) : 'text-primary')}>
+          {displayValue}{unit}
         </p>
       </CardContent>
     </Card>
@@ -61,9 +66,10 @@ export default function QualityPage() {
         </p>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid gap-4 md:grid-cols-3">
         <MetricCard title="Voltage THD" value={data?.THDv || 0} />
         <MetricCard title="Current THD" value={data?.THDi || 0} />
+        <MetricCard title="Dominant Voltage Harmonics" value={data?.HarmV || 0} unit="" />
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">

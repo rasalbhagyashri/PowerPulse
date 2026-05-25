@@ -44,6 +44,7 @@ interface PowerData {
   THDv: number;
   PowerFactor: number;
   HealthIndex: number;
+  HarmV: number | string;
   status: string;
 }
 
@@ -164,10 +165,11 @@ export default function Dashboard() {
         <StatCard title="Reactive" value={data?.ReactivePower} unit="VAR" icon={Gauge} />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
         <StatCard title="Voltage THD" value={data?.THDv} unit="%" icon={Activity} />
         <StatCard title="Current THD" value={data?.THDi} unit="%" icon={Activity} />
         <StatCard title="Power Factor" value={data?.PowerFactor} unit="" icon={Gauge} />
+        <StatCard title="Dominant Voltage Harmonics" value={data?.HarmV} unit="" icon={Waves} />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -224,7 +226,11 @@ export default function Dashboard() {
   );
 }
 
-function StatCard({ title, value, unit, icon: Icon }: { title: string; value?: number; unit: string; icon: any }) {
+function StatCard({ title, value, unit, icon: Icon }: { title: string; value?: number | string; unit: string; icon: any }) {
+  const displayValue = typeof value === 'number' 
+    ? value.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 2 })
+    : value || '--';
+
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 pt-4">
@@ -233,8 +239,8 @@ function StatCard({ title, value, unit, icon: Icon }: { title: string; value?: n
       </CardHeader>
       <CardContent className="pb-4">
         <div className="text-2xl font-bold">
-          {value !== undefined ? value.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 2 }) : '--'}
-          <span className="ml-1 text-sm font-normal text-muted-foreground">{unit}</span>
+          {displayValue}
+          {unit && <span className="ml-1 text-sm font-normal text-muted-foreground">{unit}</span>}
         </div>
       </CardContent>
     </Card>
