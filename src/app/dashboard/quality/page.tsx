@@ -19,6 +19,7 @@ interface QualityData {
   Sag: number;
   Swell: number;
   HarmV: number | string;
+  HarmI: number | string;
   status: string;
 }
 
@@ -66,10 +67,11 @@ export default function QualityPage() {
         </p>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <MetricCard title="Voltage THD" value={data?.THDv || 0} />
         <MetricCard title="Current THD" value={data?.THDi || 0} />
-        <MetricCard title="Dominant Voltage Harmonics" value={data?.HarmV || 0} unit="" />
+        <MetricCard title="Dom. Voltage Harmonics" value={data?.HarmV || 0} unit="" />
+        <MetricCard title="Dom. Current Harmonics" value={data?.HarmI || 0} unit="" />
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">

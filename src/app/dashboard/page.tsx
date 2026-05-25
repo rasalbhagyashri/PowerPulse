@@ -45,6 +45,7 @@ interface PowerData {
   PowerFactor: number;
   HealthIndex: number;
   HarmV: number | string;
+  HarmI: number | string;
   status: string;
 }
 
@@ -52,7 +53,6 @@ interface HistoryItem {
   time: string;
   voltage: number;
   current: number;
-  thd: number;
 }
 
 export default function Dashboard() {
@@ -75,7 +75,6 @@ export default function Dashboard() {
             time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
             voltage: val.Vrms || 0,
             current: val.Irms || 0,
-            thd: val.THDv || 0
           };
           const newHistory = [...prev, newItem].slice(-20);
           return newHistory;
@@ -165,11 +164,11 @@ export default function Dashboard() {
         <StatCard title="Reactive" value={data?.ReactivePower} unit="VAR" icon={Gauge} />
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard title="Voltage THD" value={data?.THDv} unit="%" icon={Activity} />
         <StatCard title="Current THD" value={data?.THDi} unit="%" icon={Activity} />
-        <StatCard title="Power Factor" value={data?.PowerFactor} unit="" icon={Gauge} />
-        <StatCard title="Dominant Voltage Harmonics" value={data?.HarmV} unit="" icon={Waves} />
+        <StatCard title="Dom. Voltage Harmonics" value={data?.HarmV} unit="" icon={Waves} />
+        <StatCard title="Dom. Current Harmonics" value={data?.HarmI} unit="" icon={Waves} />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -218,6 +217,9 @@ export default function Dashboard() {
                   {healthStatus?.label}
                 </span>
               </div>
+            </div>
+            <div className="grid grid-cols-1 w-full gap-2">
+               <StatCard title="Power Factor" value={data?.PowerFactor} unit="" icon={Gauge} />
             </div>
           </CardContent>
         </Card>
