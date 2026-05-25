@@ -19,7 +19,8 @@ import {
   TrendingUp,
   AlertTriangle,
   Info,
-  Gauge
+  Gauge,
+  HeartPulse
 } from 'lucide-react';
 import {
   LineChart,

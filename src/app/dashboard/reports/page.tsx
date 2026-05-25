@@ -15,6 +15,7 @@ import {
 import { reportData } from '@/lib/data';
 import { Download, TrendingUp, BarChart as BarChartIcon, AlertTriangle } from 'lucide-react';
 import { Area, AreaChart, Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';
+import { useMemo } from 'react';
 
 function ReportStatCard({ title, value, unit, icon: Icon }: { title: string, value: string | number, unit: string, icon: React.ElementType }) {
     return (
@@ -33,14 +34,24 @@ function ReportStatCard({ title, value, unit, icon: Icon }: { title: string, val
 export default function ReportsPage() {
   const chartConfig = {
     value: {
-      label: 'Value',
+      label: 'THD',
       color: 'hsl(var(--primary))',
     },
     count: {
-        label: 'Count',
-        color: 'hsl(var(--primary))',
+        label: 'Faults',
+        color: 'hsl(var(--destructive))',
     }
   };
+
+  // Merge THD and Faults data to prevent mapping errors in Recharts
+  const combinedThdFaultData = useMemo(() => {
+    return reportData.thd.map((item, index) => ({
+      day: item.day,
+      thdValue: item.value,
+      faultCount: reportData.faults[index]?.count ?? 0,
+    }));
+  }, []);
+
   return (
     <div className="flex flex-col gap-8 py-4">
       <div className="flex items-center justify-between">
@@ -118,14 +129,14 @@ export default function ReportsPage() {
           </CardHeader>
           <CardContent>
             <ChartContainer config={chartConfig} className="h-[300px] w-full">
-              <BarChart data={reportData.thd} margin={{ left: -20, right: 10 }}>
+              <BarChart data={combinedThdFaultData} margin={{ left: -20, right: 10 }}>
                 <CartesianGrid vertical={false} strokeDasharray="3 3" />
                 <XAxis dataKey="day" tickLine={false} axisLine={false} tickMargin={8} tickFormatter={(value) => value.slice(-2)} />
                 <YAxis yAxisId="left" orientation="left" unit="%" tickLine={false} axisLine={false} />
-                <YAxis yAxisId="right" orientation="right" dataKey="count" unit=" faults" domain={[0, 'dataMax + 2']} tickLine={false} axisLine={false} />
+                <YAxis yAxisId="right" orientation="right" unit=" flt" tickLine={false} axisLine={false} />
                 <Tooltip content={<ChartTooltipContent />} />
-                <Bar yAxisId="left" dataKey="value" name="THD" fill="var(--color-value)" radius={4} />
-                <Bar yAxisId="right" dataKey={(v, i) => reportData.faults[i].count} name="Faults" fill="hsl(var(--destructive))" radius={4} />
+                <Bar yAxisId="left" dataKey="thdValue" name="THD" fill="hsl(var(--primary))" radius={4} />
+                <Bar yAxisId="right" dataKey="faultCount" name="Faults" fill="hsl(var(--destructive))" radius={4} />
               </BarChart>
             </ChartContainer>
           </CardContent>
