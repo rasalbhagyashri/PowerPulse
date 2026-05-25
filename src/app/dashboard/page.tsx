@@ -40,8 +40,8 @@ interface PowerData {
   Sag: number;
   ActivePower: number;
   ReactivePower: number;
-  CurrentTHD: number;
-  VoltageTHD: number;
+  THDi: number;
+  THDv: number;
   TotalTHD: number;
   PowerFactor: number;
   HealthIndex: number;
@@ -166,8 +166,8 @@ export default function Dashboard() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard title="Voltage THD" value={data?.VoltageTHD} unit="%" icon={Activity} />
-        <StatCard title="Current THD" value={data?.CurrentTHD} unit="%" icon={Activity} />
+        <StatCard title="Voltage THD" value={data?.THDv} unit="%" icon={Activity} />
+        <StatCard title="Current THD" value={data?.THDi} unit="%" icon={Activity} />
         <StatCard title="Total THD" value={data?.TotalTHD} unit="%" icon={Waves} />
         <StatCard title="Power Factor" value={data?.PowerFactor} unit="" icon={Gauge} />
       </div>

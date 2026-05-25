@@ -14,8 +14,8 @@ import { cn } from '@/lib/utils';
 import { Waves, ShieldAlert, AlertTriangle, Info } from 'lucide-react';
 
 interface QualityData {
-  VoltageTHD: number;
-  CurrentTHD: number;
+  THDv: number;
+  THDi: number;
   TotalTHD: number;
   Sag: number;
   Swell: number;
@@ -63,8 +63,8 @@ export default function QualityPage() {
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">
-        <MetricCard title="Voltage THD" value={data?.VoltageTHD || 0} />
-        <MetricCard title="Current THD" value={data?.CurrentTHD || 0} />
+        <MetricCard title="Voltage THD" value={data?.THDv || 0} />
+        <MetricCard title="Current THD" value={data?.THDi || 0} />
         <MetricCard title="Total THD" value={data?.TotalTHD || 0} />
       </div>
 
