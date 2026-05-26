@@ -32,6 +32,7 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import { cn } from '@/lib/utils';
+import { calculateHealthIndex, type HealthResult } from '@/lib/health-calculator';
 
 interface PowerData {
   Vrms: number;
@@ -44,10 +45,9 @@ interface PowerData {
   THDi: number;
   THDv: number;
   PowerFactor: number;
-  HealthIndex: number;
   HarmV: number | string;
   HarmI: number | string;
-  status: string;
+  Status: string;
 }
 
 interface HistoryItem {
@@ -61,6 +61,7 @@ export default function Dashboard() {
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [lastUpdate, setLastUpdate] = useState<Date | null>(null);
+  const [health, setHealth] = useState<HealthResult | null>(null);
 
   useEffect(() => {
     const powerRef = ref(db, 'powerData');
@@ -71,6 +72,19 @@ export default function Dashboard() {
         setData(val);
         setLastUpdate(new Date());
         
+        // Local health calculation
+        const result = calculateHealthIndex({
+          Vrms: val.Vrms || 0,
+          Irms: val.Irms || 0,
+          Freq: val.Freq || 0,
+          ActivePower: val.ActivePower || 0,
+          ReactivePower: val.ReactivePower || 0,
+          PowerFactor: val.PowerFactor || 1,
+          THDv: val.THDv || 0,
+          THDi: val.THDi || 0,
+        });
+        setHealth(result);
+
         setHistory(prev => {
           const newItem = {
             time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
@@ -98,13 +112,16 @@ export default function Dashboard() {
     );
   }
 
-  const getHealthStatus = (index: number) => {
-    if (index >= 80) return { label: 'Excellent', color: 'text-success' };
-    if (index >= 60) return { label: 'Good', color: 'text-warning' };
-    return { label: 'Critical', color: 'text-destructive' };
+  const getHealthColor = (status: string) => {
+    switch (status) {
+      case 'Excellent': return 'text-success';
+      case 'Good': return 'text-lime-500';
+      case 'Moderate': return 'text-warning';
+      case 'Poor': return 'text-orange-500';
+      case 'Critical': return 'text-destructive';
+      default: return 'text-primary';
+    }
   };
-
-  const healthStatus = data ? getHealthStatus(data.HealthIndex || 0) : null;
 
   return (
     <div className="flex flex-col gap-6 p-4 md:p-8 bg-background min-h-screen">
@@ -151,7 +168,7 @@ export default function Dashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-xl font-bold uppercase text-primary">
-              {data?.status || 'NORMAL'}
+              {data?.Status || 'NORMAL'}
             </div>
           </CardContent>
         </Card>
@@ -199,26 +216,35 @@ export default function Dashboard() {
         <Card className="flex flex-col">
           <CardHeader>
             <CardTitle>Health Index</CardTitle>
-            <CardDescription>Equipment reliability calculation</CardDescription>
+            <CardDescription>Calculated from live parameters</CardDescription>
           </CardHeader>
           <CardContent className="flex flex-1 flex-col items-center justify-center gap-6">
-            <div className="relative flex items-center justify-center">
-              <svg className="h-32 w-32 -rotate-90">
-                <circle cx="64" cy="64" r="58" fill="transparent" stroke="hsl(var(--muted))" strokeWidth="8" />
-                <circle
-                  cx="64" cy="64" r="58" fill="transparent" stroke="currentColor" strokeWidth="8"
-                  strokeDasharray={364.4}
-                  strokeDashoffset={364.4 - (364.4 * (data?.HealthIndex || 0)) / 100}
-                  className={cn("transition-all duration-1000", healthStatus?.color)}
-                />
-              </svg>
-              <div className="absolute flex flex-col items-center">
-                <span className="text-3xl font-bold">{data?.HealthIndex || 0}%</span>
-                <span className={cn("text-xs font-semibold", healthStatus?.color)}>
-                  {healthStatus?.label}
-                </span>
-              </div>
-            </div>
+            {health && (
+              <>
+                <div className="relative flex items-center justify-center">
+                  <svg className="h-32 w-32 -rotate-90">
+                    <circle cx="64" cy="64" r="58" fill="transparent" stroke="hsl(var(--muted))" strokeWidth="8" />
+                    <circle
+                      cx="64" cy="64" r="58" fill="transparent" stroke="currentColor" strokeWidth="8"
+                      strokeDasharray={364.4}
+                      strokeDashoffset={364.4 - (364.4 * (100 - health.healthIndex)) / 100}
+                      className={cn("transition-all duration-1000", getHealthColor(health.status))}
+                    />
+                  </svg>
+                  <div className="absolute flex flex-col items-center">
+                    <span className="text-3xl font-bold">{Math.round(100 - health.healthIndex)}%</span>
+                    <span className={cn("text-xs font-semibold", getHealthColor(health.status))}>
+                      {health.status}
+                    </span>
+                  </div>
+                </div>
+                <div className="text-center">
+                   <p className="text-sm font-medium text-muted-foreground italic">
+                     {health.topContributor}
+                   </p>
+                </div>
+              </>
+            )}
             <div className="grid grid-cols-1 w-full gap-2">
                <StatCard title="Power Factor" value={data?.PowerFactor} unit="" icon={Gauge} />
             </div>

@@ -20,7 +20,7 @@ interface QualityData {
   Swell: number;
   HarmV: number | string;
   HarmI: number | string;
-  status: string;
+  Status: string;
 }
 
 function MetricCard({ title, value, unit = "%" }: { title: string; value: number | string; unit?: string }) {
@@ -106,7 +106,7 @@ export default function QualityPage() {
           </CardHeader>
           <CardContent>
             <div className="text-xl font-bold uppercase text-primary">
-              {data?.status || 'NORMAL'}
+              {data?.Status || 'NORMAL'}
             </div>
           </CardContent>
         </Card>
