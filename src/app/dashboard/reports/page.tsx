@@ -165,7 +165,7 @@ export default function ReportsPage() {
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={combinedThdFaultData} margin={{ left: -20, right: 10 }}>
                   <CartesianGrid vertical={false} strokeDasharray="3 3" />
-                  <XAxis dataKey="day" tickLine={false} axisLine={false} tickMargin={8} tickFormatter={(value) => value.slice(-2)} hide={window.innerWidth < 640} />
+                  <XAxis dataKey="day" tickLine={false} axisLine={false} tickMargin={8} tickFormatter={(value) => value.slice(-2)} hide={false} />
                   <YAxis yAxisId="left" orientation="left" unit="%" tickLine={false} axisLine={false} tick={{fontSize: 10}} />
                   <YAxis yAxisId="right" orientation="right" unit=" flt" tickLine={false} axisLine={false} tick={{fontSize: 10}} />
                   <Tooltip content={<ChartTooltipContent />} />
