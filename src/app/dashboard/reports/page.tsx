@@ -1,8 +1,9 @@
 'use client';
-
+import { Badge } from "@/components/ui/badge";
 import React, { useEffect, useState, useMemo } from 'react';
 import { db } from '@/firebase/config';
 import { ref, onValue } from 'firebase/database';
+import { Tooltip } from 'recharts';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -13,7 +14,7 @@ import {
 } from '@/components/ui/card';
 import {
   ChartContainer,
-  ChartTooltip,
+  ChartTooltip as tooltip,
   ChartTooltipContent,
 } from '@/components/ui/chart';
 import {
@@ -26,8 +27,8 @@ import {
 } from "@/components/ui/table";
 import { reportData } from '@/lib/data';
 import { Download, TrendingUp, BarChart as BarChartIcon, AlertTriangle, History } from 'lucide-react';
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
-
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis, ResponsiveContainer } from 'recharts';
+export const dynamic = "force-dynamic";
 interface EventLog {
   id: string;
   type: 'Voltage Sag' | 'Voltage Swell';
@@ -50,7 +51,7 @@ export default function ReportsPage() {
           return;
         }
 
-        if (data.Sag > lastSag) {
+        if (lastSag !== null && data.Sag > lastSag) {
           const count = data.Sag - lastSag;
           const newEntries: EventLog[] = Array.from({ length: count }).map((_, i) => ({
             id: `sag-${Date.now()}-${i}`,
@@ -61,7 +62,7 @@ export default function ReportsPage() {
           setLastSag(data.Sag);
         }
 
-        if (data.Swell > lastSwell) {
+        if (lastSwell !== null && data.Swell > lastSwell) {
           const count = data.Swell - lastSwell;
           const newEntries: EventLog[] = Array.from({ length: count }).map((_, i) => ({
             id: `swell-${Date.now()}-${i}`,
@@ -186,7 +187,7 @@ function ReportStatCard({ title, value, unit, icon: Icon }: { title: string, val
         <Card className="bg-muted/30 border-none shadow-none">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 p-3 sm:p-4 pb-2">
                 <CardTitle className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-muted-foreground">{title}</CardTitle>
-                <Icon className="h-3 w-3 sm:h-4 w-4 text-primary/60" />
+                <Icon className="h-3 w-3 sm:h-4 sm:w-4 text-primary/60" />
             </CardHeader>
             <CardContent className="p-3 sm:p-4 pt-0">
                 <div className="text-lg sm:text-2xl font-black tabular-nums">{value} <span className="text-[10px] sm:text-xs text-muted-foreground font-medium">{unit}</span></div>
