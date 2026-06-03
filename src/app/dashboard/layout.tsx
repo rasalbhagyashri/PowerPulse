@@ -37,7 +37,6 @@ import {
   Settings,
 } from 'lucide-react';
 import { Icons } from '@/components/icons';
-import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 
 const navItems = [
@@ -50,7 +49,6 @@ const navItems = [
     href: '/dashboard/quality',
     icon: TriangleAlert,
     label: 'Power Quality',
-    badge: '3',
   },
   {
     href: '/dashboard/health',
@@ -73,11 +71,11 @@ export default function DashboardLayout({
 
   return (
     <SidebarProvider>
-      <Sidebar>
+      <Sidebar collapsible="icon">
         <SidebarHeader>
-          <div className="flex h-10 items-center gap-2 px-2">
-            <Icons.logo className="h-7 w-7 text-primary" />
-            <span className="text-lg font-semibold">PowerPulse</span>
+          <div className="flex h-12 items-center gap-2 px-2 overflow-hidden">
+            <Icons.logo className="h-7 w-7 shrink-0 text-primary" />
+            <span className="text-lg font-bold truncate">PowerPulse</span>
           </div>
         </SidebarHeader>
         <SidebarContent>
@@ -93,9 +91,6 @@ export default function DashboardLayout({
                   <Link href={item.href}>
                     <item.icon className="h-5 w-5" />
                     <span className="flex-1">{item.label}</span>
-                    {item.badge && (
-                      <Badge variant="destructive" className="h-5">{item.badge}</Badge>
-                    )}
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -107,19 +102,21 @@ export default function DashboardLayout({
         </SidebarFooter>
       </Sidebar>
       <SidebarInset>
-        <header className="sticky top-0 z-30 flex h-14 items-center justify-between gap-4 border-b bg-background/80 px-4 backdrop-blur-sm sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
-          <SidebarTrigger className="sm:hidden" />
-          <div className="flex-1">
-             {/* Can add breadcrumbs or page title here */}
+        <header className="sticky top-0 z-30 flex h-14 items-center justify-between gap-4 border-b bg-background/95 px-4 backdrop-blur-sm sm:static sm:h-16 sm:border-0 sm:bg-transparent sm:px-6">
+          <div className="flex items-center gap-4">
+            <SidebarTrigger className="-ml-1" />
+            <div className="hidden sm:block">
+               <Badge variant="outline" className="font-mono">Live Monitoring</Badge>
+            </div>
           </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
                 variant="outline"
                 size="icon"
-                className="overflow-hidden rounded-full"
+                className="overflow-hidden rounded-full h-8 w-8 sm:h-9 sm:w-9"
               >
-                <Avatar>
+                <Avatar className="h-full w-full">
                   <AvatarImage
                     src="https://picsum.photos/seed/1/100/100"
                     alt="User"
@@ -129,7 +126,7 @@ export default function DashboardLayout({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuLabel>My Account</DropdownMenuLabel>
+              <DropdownMenuLabel>Operator Console</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem>
                 <Settings className="mr-2 h-4 w-4" />
@@ -145,7 +142,11 @@ export default function DashboardLayout({
             </DropdownMenuContent>
           </DropdownMenu>
         </header>
-        <main className="flex-1 p-4 sm:px-6 sm:py-0">{children}</main>
+        <main className="flex-1 overflow-x-hidden p-2 sm:p-4 md:p-6 lg:p-8">
+          <div className="mx-auto max-w-7xl">
+            {children}
+          </div>
+        </main>
       </SidebarInset>
     </SidebarProvider>
   );

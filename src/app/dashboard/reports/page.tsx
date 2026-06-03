@@ -26,7 +26,7 @@ import {
 } from "@/components/ui/table";
 import { reportData } from '@/lib/data';
 import { Download, TrendingUp, BarChart as BarChartIcon, AlertTriangle, History } from 'lucide-react';
-import { Area, AreaChart, Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 
 interface EventLog {
   id: string;
@@ -91,61 +91,59 @@ export default function ReportsPage() {
   };
 
   return (
-    <div className="flex flex-col gap-8 py-4 px-4 md:px-8">
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+    <div className="space-y-8">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold">System Reports</h1>
-          <p className="text-muted-foreground">Historical analysis and real-time event tracking.</p>
+          <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">System Reports</h1>
+          <p className="text-sm text-muted-foreground">Historical analysis and real-time transient recording.</p>
         </div>
-        <Button variant="outline">
-          <Download className="mr-2 h-4 w-4" /> Export Data
+        <Button variant="outline" size="sm" className="w-full sm:w-auto">
+          <Download className="mr-2 h-4 w-4" /> Export session
         </Button>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-3">
-        <ReportStatCard title="Average THD" value={reportData.summary.avgThd} unit="%" icon={BarChartIcon} />
-        <ReportStatCard title="Total Disturbances" value={reportData.summary.totalDisturbances} unit="events" icon={AlertTriangle} />
+      <div className="grid gap-4 grid-cols-2 md:grid-cols-3">
+        <ReportStatCard title="Avg THD" value={reportData.summary.avgThd} unit="%" icon={BarChartIcon} />
+        <ReportStatCard title="Disturbances" value={reportData.summary.totalDisturbances} unit="cnt" icon={AlertTriangle} />
         <ReportStatCard title="Health Trend" value={reportData.summary.healthTrend} unit="" icon={TrendingUp} />
       </div>
 
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <div>
-            <CardTitle>Event History Log</CardTitle>
-            <CardDescription>Detected sag/swell instances recorded during active session</CardDescription>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+          <div className="space-y-1">
+            <CardTitle className="text-base sm:text-lg">Event History Log</CardTitle>
+            <CardDescription className="text-xs">Real-time recording of detected transient events.</CardDescription>
           </div>
           <History className="h-5 w-5 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="rounded-md border">
+          <div className="rounded-md border overflow-x-auto">
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Event Type</TableHead>
-                  <TableHead>Timestamp</TableHead>
-                  <TableHead className="text-right">Action</TableHead>
+                  <TableHead className="text-xs uppercase font-bold">Type</TableHead>
+                  <TableHead className="text-xs uppercase font-bold">Timestamp</TableHead>
+                  <TableHead className="text-right text-xs uppercase font-bold">Status</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {events.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={3} className="h-24 text-center text-muted-foreground italic">
-                      Monitoring active... Events will appear here as they are detected.
+                    <TableCell colSpan={3} className="h-24 text-center text-muted-foreground italic text-xs">
+                      No events detected in this session. Monitoring active...
                     </TableCell>
                   </TableRow>
                 ) : (
                   events.map((event) => (
                     <TableRow key={event.id}>
-                      <TableCell className="font-medium">
-                        <span className={event.type === 'Voltage Sag' ? 'text-destructive font-bold' : 'text-orange-500 font-bold'}>
+                      <TableCell className="font-bold py-3 text-xs sm:text-sm">
+                        <span className={event.type === 'Voltage Sag' ? 'text-destructive' : 'text-orange-500'}>
                           {event.type}
                         </span>
                       </TableCell>
-                      <TableCell>{event.timestamp}</TableCell>
+                      <TableCell className="text-xs sm:text-sm whitespace-nowrap">{event.timestamp}</TableCell>
                       <TableCell className="text-right">
-                        <span className="inline-flex items-center rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary">
-                          Recorded
-                        </span>
+                        <Badge variant="outline" className="text-[10px] font-bold h-5 uppercase">Logged</Badge>
                       </TableCell>
                     </TableRow>
                   ))
@@ -158,21 +156,25 @@ export default function ReportsPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>THD & Fault Occurrences</CardTitle>
-          <CardDescription>Daily average Total Harmonic Distortion and fault counts.</CardDescription>
+          <CardTitle className="text-base sm:text-lg">THD & Fault Analytics</CardTitle>
+          <CardDescription className="text-xs">Daily performance metrics across a 30-day window.</CardDescription>
         </CardHeader>
         <CardContent>
-          <ChartContainer config={chartConfig} className="h-[300px] w-full">
-            <BarChart data={combinedThdFaultData} margin={{ left: -20, right: 10 }}>
-              <CartesianGrid vertical={false} strokeDasharray="3 3" />
-              <XAxis dataKey="day" tickLine={false} axisLine={false} tickMargin={8} tickFormatter={(value) => value.slice(-2)} />
-              <YAxis yAxisId="left" orientation="left" unit="%" tickLine={false} axisLine={false} />
-              <YAxis yAxisId="right" orientation="right" unit=" flt" tickLine={false} axisLine={false} />
-              <Tooltip content={<ChartTooltipContent />} />
-              <Bar yAxisId="left" dataKey="thdValue" name="THD" fill="hsl(var(--primary))" radius={4} />
-              <Bar yAxisId="right" dataKey="faultCount" name="Faults" fill="hsl(var(--destructive))" radius={4} />
-            </BarChart>
-          </ChartContainer>
+          <div className="h-[250px] sm:h-[350px] w-full">
+            <ChartContainer config={chartConfig} className="h-full w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={combinedThdFaultData} margin={{ left: -20, right: 10 }}>
+                  <CartesianGrid vertical={false} strokeDasharray="3 3" />
+                  <XAxis dataKey="day" tickLine={false} axisLine={false} tickMargin={8} tickFormatter={(value) => value.slice(-2)} hide={window.innerWidth < 640} />
+                  <YAxis yAxisId="left" orientation="left" unit="%" tickLine={false} axisLine={false} tick={{fontSize: 10}} />
+                  <YAxis yAxisId="right" orientation="right" unit=" flt" tickLine={false} axisLine={false} tick={{fontSize: 10}} />
+                  <Tooltip content={<ChartTooltipContent />} />
+                  <Bar yAxisId="left" dataKey="thdValue" name="THD" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
+                  <Bar yAxisId="right" dataKey="faultCount" name="Faults" fill="hsl(var(--destructive))" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </ChartContainer>
+          </div>
         </CardContent>
       </Card>
     </div>
@@ -181,13 +183,13 @@ export default function ReportsPage() {
 
 function ReportStatCard({ title, value, unit, icon: Icon }: { title: string, value: string | number, unit: string, icon: React.ElementType }) {
     return (
-        <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">{title}</CardTitle>
-                <Icon className="h-4 w-4 text-muted-foreground" />
+        <Card className="bg-muted/30 border-none shadow-none">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 p-3 sm:p-4 pb-2">
+                <CardTitle className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-muted-foreground">{title}</CardTitle>
+                <Icon className="h-3 w-3 sm:h-4 w-4 text-primary/60" />
             </CardHeader>
-            <CardContent>
-                <div className="text-2xl font-bold">{value} <span className="text-sm text-muted-foreground">{unit}</span></div>
+            <CardContent className="p-3 sm:p-4 pt-0">
+                <div className="text-lg sm:text-2xl font-black tabular-nums">{value} <span className="text-[10px] sm:text-xs text-muted-foreground font-medium">{unit}</span></div>
             </CardContent>
         </Card>
     )

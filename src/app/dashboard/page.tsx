@@ -72,7 +72,7 @@ export default function Dashboard() {
         setData(val);
         setLastUpdate(new Date());
         
-        // Local health calculation
+        // Local health calculation directly in web app
         const result = calculateHealthIndex({
           Vrms: val.Vrms || 0,
           Irms: val.Irms || 0,
@@ -103,10 +103,10 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <div className="flex h-screen items-center justify-center bg-background">
+      <div className="flex h-[calc(100vh-8rem)] items-center justify-center">
         <div className="flex flex-col items-center gap-4">
-          <Activity className="h-12 w-12 animate-spin text-primary" />
-          <p className="text-lg font-medium animate-pulse">Connecting to PowerPulse Cloud...</p>
+          <Activity className="h-10 w-10 animate-spin text-primary" />
+          <p className="text-lg font-medium animate-pulse text-muted-foreground">Connecting to PowerPulse Node...</p>
         </div>
       </div>
     );
@@ -124,50 +124,50 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="flex flex-col gap-6 p-4 md:p-8 bg-background min-h-screen">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">System Console</h1>
-          <p className="text-muted-foreground">Real-time Telemetry: Active Monitoring</p>
+    <div className="space-y-6">
+      <div className="flex flex-col gap-2">
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">System Console</h1>
+          <div className="flex items-center gap-2 text-[10px] sm:text-xs text-muted-foreground bg-muted/50 px-2 sm:px-3 py-1 rounded-full">
+            <Clock className="h-3 w-3 sm:h-4 w-4" />
+            Live: {lastUpdate ? lastUpdate.toLocaleTimeString() : '--'}
+          </div>
         </div>
-        <div className="flex items-center gap-2 text-sm text-muted-foreground bg-muted/50 px-3 py-1.5 rounded-full">
-          <Clock className="h-4 w-4" />
-          Last Update: {lastUpdate ? lastUpdate.toLocaleTimeString() : 'Never'}
-        </div>
+        <p className="text-sm text-muted-foreground">Real-time telemetry and advanced power analysis.</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card className={cn("transition-colors", (data?.Sag || 0) > 0 ? "bg-destructive/10 border-destructive/50" : "bg-card")}>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <Card className={cn("transition-all", (data?.Sag || 0) > 0 ? "bg-destructive/5 border-destructive/20" : "bg-card")}>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Voltage Sag</CardTitle>
-            <ShieldAlert className={cn("h-5 w-5", (data?.Sag || 0) > 0 ? "text-destructive" : "text-muted-foreground")} />
+            <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Voltage Sag</CardTitle>
+            <ShieldAlert className={cn("h-4 w-4", (data?.Sag || 0) > 0 ? "text-destructive" : "text-muted-foreground")} />
           </CardHeader>
           <CardContent>
-            <div className={cn("text-xl font-bold uppercase", (data?.Sag || 0) > 0 ? "text-destructive" : "text-muted-foreground")}>
-              {data?.Sag ? `${data.Sag} EVENT${data.Sag > 1 ? 'S' : ''} DETECTED` : '0 EVENTS DETECTED'}
+            <div className={cn("text-lg sm:text-xl font-black tabular-nums", (data?.Sag || 0) > 0 ? "text-destructive" : "text-muted-foreground")}>
+              {data?.Sag || 0} EVENTS
             </div>
           </CardContent>
         </Card>
         
-        <Card className={cn("transition-colors", (data?.Swell || 0) > 0 ? "bg-orange-500/10 border-orange-500/50" : "bg-card")}>
+        <Card className={cn("transition-all", (data?.Swell || 0) > 0 ? "bg-orange-500/5 border-orange-500/20" : "bg-card")}>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Voltage Swell</CardTitle>
-            <AlertTriangle className={cn("h-5 w-5", (data?.Swell || 0) > 0 ? "text-orange-500" : "text-muted-foreground")} />
+            <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Voltage Swell</CardTitle>
+            <AlertTriangle className={cn("h-4 w-4", (data?.Swell || 0) > 0 ? "text-orange-500" : "text-muted-foreground")} />
           </CardHeader>
           <CardContent>
-            <div className={cn("text-xl font-bold uppercase", (data?.Swell || 0) > 0 ? "text-orange-500" : "text-muted-foreground")}>
-              {data?.Swell ? `${data.Swell} EVENT${data.Swell > 1 ? 'S' : ''} DETECTED` : '0 EVENTS DETECTED'}
+            <div className={cn("text-lg sm:text-xl font-black tabular-nums", (data?.Swell || 0) > 0 ? "text-orange-500" : "text-muted-foreground")}>
+              {data?.Swell || 0} EVENTS
             </div>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="sm:col-span-2 lg:col-span-1 border-primary/20 bg-primary/5">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">System Status</CardTitle>
-            <Info className="h-5 w-5 text-primary" />
+            <CardTitle className="text-xs font-bold uppercase tracking-wider text-primary">System Status</CardTitle>
+            <Info className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
-            <div className="text-xl font-bold uppercase text-primary">
+            <div className="text-lg sm:text-xl font-black uppercase text-primary">
               {data?.Status || 'NORMAL'}
             </div>
           </CardContent>
@@ -182,32 +182,32 @@ export default function Dashboard() {
         <StatCard title="Reactive" value={data?.ReactivePower} unit="VAR" icon={Gauge} />
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard title="Voltage THD" value={data?.THDv} unit="%" icon={Activity} />
         <StatCard title="Current THD" value={data?.THDi} unit="%" icon={Activity} />
-        <StatCard title="Dom. Voltage Harmonics" value={data?.HarmV} unit="" icon={Waves} />
-        <StatCard title="Dom. Current Harmonics" value={data?.HarmI} unit="" icon={Waves} />
+        <StatCard title="Dom. V Harm" value={data?.HarmV} unit="" icon={Waves} />
+        <StatCard title="Dom. I Harm" value={data?.HarmI} unit="" icon={Waves} />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <Card className="lg:col-span-2">
-          <CardHeader>
-            <CardTitle>Telemetry Stream</CardTitle>
-            <CardDescription>Vrms and Irms real-time trends</CardDescription>
+          <CardHeader className="pb-4">
+            <CardTitle className="text-base sm:text-lg">Telemetry Stream</CardTitle>
+            <CardDescription>Live waveform analysis for Vrms and Irms.</CardDescription>
           </CardHeader>
-          <CardContent className="h-[300px]">
+          <CardContent className="h-[250px] sm:h-[350px]">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={history}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--muted))" />
                 <XAxis dataKey="time" hide />
-                <YAxis yAxisId="left" orientation="left" domain={['auto', 'auto']} stroke="hsl(var(--primary))" />
-                <YAxis yAxisId="right" orientation="right" domain={['auto', 'auto']} stroke="hsl(var(--accent))" />
+                <YAxis yAxisId="left" orientation="left" domain={['auto', 'auto']} stroke="hsl(var(--primary))" tick={{fontSize: 10}} />
+                <YAxis yAxisId="right" orientation="right" domain={['auto', 'auto']} stroke="hsl(var(--accent))" tick={{fontSize: 10}} />
                 <Tooltip 
-                  contentStyle={{ backgroundColor: 'hsl(var(--card))', borderColor: 'hsl(var(--border))' }}
-                  itemStyle={{ color: 'hsl(var(--foreground))' }}
+                  contentStyle={{ backgroundColor: 'hsl(var(--card))', borderRadius: '8px', border: '1px solid hsl(var(--border))' }}
+                  itemStyle={{ fontSize: '12px' }}
                 />
-                <Line yAxisId="left" type="monotone" dataKey="voltage" stroke="hsl(var(--primary))" strokeWidth={2} dot={false} isAnimationActive={false} />
-                <Line yAxisId="right" type="monotone" dataKey="current" stroke="hsl(var(--accent))" strokeWidth={2} dot={false} isAnimationActive={false} />
+                <Line yAxisId="left" type="monotone" dataKey="voltage" stroke="hsl(var(--primary))" strokeWidth={2.5} dot={false} isAnimationActive={false} />
+                <Line yAxisId="right" type="monotone" dataKey="current" stroke="hsl(var(--accent))" strokeWidth={2.5} dot={false} isAnimationActive={false} />
               </LineChart>
             </ResponsiveContainer>
           </CardContent>
@@ -215,37 +215,38 @@ export default function Dashboard() {
 
         <Card className="flex flex-col">
           <CardHeader>
-            <CardTitle>Health Index</CardTitle>
-            <CardDescription>Calculated from live parameters</CardDescription>
+            <CardTitle className="text-base sm:text-lg">Health Index</CardTitle>
+            <CardDescription>Algorithm-derived health metric.</CardDescription>
           </CardHeader>
-          <CardContent className="flex flex-1 flex-col items-center justify-center gap-6">
+          <CardContent className="flex flex-1 flex-col items-center justify-center gap-6 py-8">
             {health && (
               <>
                 <div className="relative flex items-center justify-center">
-                  <svg className="h-32 w-32 -rotate-90">
-                    <circle cx="64" cy="64" r="58" fill="transparent" stroke="hsl(var(--muted))" strokeWidth="8" />
+                  <svg className="h-28 w-28 sm:h-40 sm:w-40 -rotate-90">
+                    <circle cx="50%" cy="50%" r="42%" fill="transparent" stroke="hsl(var(--muted))" strokeWidth="8" />
                     <circle
-                      cx="64" cy="64" r="58" fill="transparent" stroke="currentColor" strokeWidth="8"
-                      strokeDasharray={364.4}
-                      strokeDashoffset={364.4 - (364.4 * (100 - health.healthIndex)) / 100}
+                      cx="50%" cy="50%" r="42%" fill="transparent" stroke="currentColor" strokeWidth="8"
+                      strokeDasharray="264"
+                      strokeDashoffset={264 - (264 * (100 - health.healthIndex)) / 100}
+                      strokeLinecap="round"
                       className={cn("transition-all duration-1000", getHealthColor(health.status))}
                     />
                   </svg>
                   <div className="absolute flex flex-col items-center">
-                    <span className="text-3xl font-bold">{Math.round(100 - health.healthIndex)}%</span>
-                    <span className={cn("text-xs font-semibold", getHealthColor(health.status))}>
+                    <span className="text-2xl sm:text-4xl font-black">{Math.round(100 - health.healthIndex)}%</span>
+                    <span className={cn("text-[10px] sm:text-xs font-bold uppercase tracking-widest", getHealthColor(health.status))}>
                       {health.status}
                     </span>
                   </div>
                 </div>
-                <div className="text-center">
-                   <p className="text-sm font-medium text-muted-foreground italic">
-                     {health.topContributor}
+                <div className="text-center px-4">
+                   <p className="text-xs sm:text-sm font-medium text-muted-foreground leading-relaxed">
+                     <span className="text-foreground font-semibold">Diagnosis:</span> {health.topContributor}
                    </p>
                 </div>
               </>
             )}
-            <div className="grid grid-cols-1 w-full gap-2">
+            <div className="w-full mt-auto">
                <StatCard title="Power Factor" value={data?.PowerFactor} unit="" icon={Gauge} />
             </div>
           </CardContent>
@@ -261,15 +262,15 @@ function StatCard({ title, value, unit, icon: Icon }: { title: string; value?: n
     : value || '--';
 
   return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 pt-4">
-        <CardTitle className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{title}</CardTitle>
-        <Icon className="h-4 w-4 text-primary opacity-70" />
+    <Card className="overflow-hidden border-none shadow-none bg-muted/30">
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 p-3 pb-1">
+        <CardTitle className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider truncate mr-2">{title}</CardTitle>
+        <Icon className="h-3 w-3 text-primary/60 shrink-0" />
       </CardHeader>
-      <CardContent className="pb-4">
-        <div className="text-2xl font-bold">
+      <CardContent className="p-3 pt-0">
+        <div className="text-lg sm:text-xl font-bold tabular-nums">
           {displayValue}
-          {unit && <span className="ml-1 text-sm font-normal text-muted-foreground">{unit}</span>}
+          {unit && <span className="ml-1 text-[10px] font-medium text-muted-foreground">{unit}</span>}
         </div>
       </CardContent>
     </Card>
